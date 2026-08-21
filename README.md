@@ -16,7 +16,7 @@
 
 <br />
 
-[Features](#-key-features) • [How It Works](#-how-it-works) • [Architecture](#-architecture) • [Project Structure](#-project-structure) • [Getting Started](#-getting-started) • [License & Attribution](#-license--attribution-terms-gplv3) • [Author](#-author)
+[Features](#-key-features) • [How It Works](#-how-it-works) • [Architecture](#-architecture) • [Project Structure](#-project-structure) • [Getting Started](#-getting-started) • [Legal & Policies](#-legal-privacy--compliance-documents) • [License & Attribution](#-license--attribution-terms-gplv3) • [Author](#-author)
 
 </div>
 
@@ -239,6 +239,22 @@ NoonTrop requests only hardware permissions strictly needed for Wi-Fi Direct rad
 | `ACCESS_WIFI_STATE` | Android | Required to inspect current Wi-Fi adapter availability |
 
 > 🔒 **Privacy Guarantee**: NoonTrop **NEVER** tracks your GPS location or uploads your data to any remote server. The location permission on older Android versions is a technical requirement of Android's Wi-Fi scanning APIs.
+
+---
+
+## 📜 Legal, Privacy & Compliance Documents
+
+NoonTrop is backed by comprehensive open-source legal and compliance policies to ensure transparency, security, and user protection:
+
+| Document | Description |
+|---|---|
+| 📄 **[Privacy Policy](file:///d:/noontrop/PRIVACY_POLICY.md)** | Zero-telemetry, zero-server privacy disclosures, GDPR/CCPA & hardware permissions breakdown |
+| ⚖️ **[Terms of Service](file:///d:/noontrop/TERMS_OF_SERVICE.md)** | Terms of use, P2P mesh network terms, emergency services disclaimer, and liability limits |
+| 🛡️ **[Security Policy](file:///d:/noontrop/SECURITY.md)** | TweetNaCl cryptographic architecture, threat model, and responsible vulnerability disclosure |
+| ⚠️ **[Legal Disclaimer](file:///d:/noontrop/DISCLAIMER.md)** | Radio frequency (RF) standards compliance, non-emergency notice, and cryptographic export status |
+| 🤝 **[Code of Conduct](file:///d:/noontrop/CODE_OF_CONDUCT.md)** | Contributor Covenant v2.1 community standards and enforcement pledge |
+| 🛠️ **[Contributing Guide](file:///d:/noontrop/CONTRIBUTING.md)** | Developer guidelines, PR workflow, and Developer Certificate of Origin (DCO) |
+| 🔓 **[GNU GPLv3 License](file:///d:/noontrop/LICENSE)** | Full copyleft license terms guaranteeing public source code and author credit |
 
 ---
 
