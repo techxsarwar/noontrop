@@ -1,74 +1,69 @@
-# Contributor Covenant Code of Conduct
+# 🤝 Code of Conduct for NoonTrop
 
-## Our Pledge
+**Project:** NoonTrop — Pure Offline P2P Mesh & Wi-Fi Direct Communicator  
+**Maintainer:** Sarwar (`techxsarwar`) — Contact: [darsarwar060@gmail.com](mailto:darsarwar060@gmail.com)
 
-We as members, contributors, and leaders pledge to make participation in our
-community a harassment-free experience for everyone, regardless of age, body
-size, visible or invisible disability, ethnicity, sex characteristics, gender
-identity and expression, level of experience, education, socio-economic status,
-nationality, personal appearance, race, caste, color, religion, or sexual
-identity and orientation.
+---
 
-We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy community.
+## 🌟 Our Pledge
 
-## Our Standards
+We as members, contributors, and leaders of the **NoonTrop** project pledge to make participation in our community a harassment-free, welcoming, and productive experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
 
-Examples of behavior that contributes to a positive environment for our
-community include:
+We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy decentralized software community.
 
-* Demonstrating empathy and kindness toward other people
-* Being respectful of differing opinions, viewpoints, and experiences
-* Giving and gracefully accepting constructive feedback
-* Accepting responsibility and apologizing to those affected by our mistakes,
-  and learning from the experience
-* Focusing on what is best not just for us as individuals, but for the
-  overall community
+---
 
-Examples of unacceptable behavior include:
+## 🎯 Our Standards
 
-* The use of sexualized language or imagery, and sexual attention or
-  advances of any kind
-* Trolling, insulting or derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or email
-  address, without their explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+### Positive Behavior We Encourage:
+* **Empathy & Kindness**: Treating all community members, contributors, and users with mutual respect.
+* **Constructive Collaboration**: Being receptive to differing viewpoints, architectural discussions, and technical critiques.
+* **Graceful Feedback**: Giving and gracefully accepting constructive technical feedback.
+* **Accountability**: Taking responsibility for errors, apologizing to those affected, and iterating to improve.
+* **Community Focus**: Prioritizing what is best for the open-source community, decentralization, user security, and project health.
 
-## Enforcement Responsibilities
+### Unacceptable Behavior:
+* The use of sexualized language or imagery, unwelcome sexual attention, or romantic advances.
+* Trolling, insulting, demeaning, or derogatory comments, and personal or political attacks.
+* Public or private harassment in any form.
+* Publishing private information of others (doxxing), such as physical addresses or private contact info, without explicit permission.
+* Spreading malicious payloads, intentionally degrading radio frequency protocols, or harmful conduct.
+* Other conduct which could reasonably be considered inappropriate or unprofessional.
 
-Community leaders are responsible for clarifying and enforcing our standards of
-acceptable behavior and will take appropriate and fair corrective action in
-response to any behavior that they deem inappropriate, threatening, offensive,
-or harmful.
+---
 
-Community leaders have the right and responsibility to remove, edit, or reject
-comments, commits, code, wiki edits, issues, and other contributions that are
-not aligned to this Code of Conduct, and will communicate reasons for moderation
-decisions when appropriate.
+## 🛡️ Enforcement Responsibilities
 
-## Scope
+The project maintainer (**Sarwar / @techxsarwar**) is responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any behavior deemed inappropriate, threatening, offensive, or harmful.
 
-This Code of Conduct applies within all community spaces, and also applies when
-an individual is officially representing the community in public spaces.
-Examples of representing our community include using an official e-mail address,
-posting via an official social media account, or acting as an appointed
-representative at an online or offline event.
+Maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, documentation edits, issues, and pull requests that do not align with this Code of Conduct, and will communicate reasons for moderation decisions when appropriate.
 
-## Enforcement
+---
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the project maintainer at **[darsarwar060@gmail.com](mailto:darsarwar060@gmail.com)**.
-All complaints will be reviewed and investigated promptly and fairly.
+## 🌐 Scope
 
-All community leaders are obligated to respect the privacy and security of the
-reporter of any incident.
+This Code of Conduct applies within all project spaces (GitHub Issues, Pull Requests, Discussions, Discord/Matrix channels, social media representations), as well as when an individual is officially representing the project in public or offline spaces.
 
-## Attribution
+---
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage],
-version 2.1, available at
-https://www.contributor-covenant.org/version/2/1/code_of_conduct.html
+## 🚨 Reporting & Enforcement Guidelines
 
-[homepage]: https://www.contributor-covenant.org
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported directly to the project maintainer:
+
+- **Lead Maintainer:** Sarwar (`techxsarwar`)
+- **Email:** [darsarwar060@gmail.com](mailto:darsarwar060@gmail.com)
+- **Subject Line:** `[CODE OF CONDUCT REPORT] NoonTrop Community`
+
+All reports will be reviewed and investigated promptly, confidentially, and fairly. Community leadership is obligated to respect the privacy and security of the reporter.
+
+### Enforcement Steps:
+1. **Correction**: A private, written warning clarifying the violation and providing guidance on appropriate behavior.
+2. **Warning**: A formal warning with consequences for continued violations.
+3. **Temporary Ban**: Temporary suspension from interacting with the repository and community spaces.
+4. **Permanent Ban**: Permanent expulsion from the project repository, organization, and all associated communication channels.
+
+---
+
+## 📜 Attribution
+
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org), version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html](https://www.contributor-covenant.org/version/2/1/code_of_conduct.html).
