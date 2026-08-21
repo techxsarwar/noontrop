@@ -7,6 +7,17 @@ import { PermissionService } from './PermissionService';
 type PeerListener = (peers: Peer[]) => void;
 type MessageListener = (message: Message) => void;
 
+export const PUBLIC_BROADCAST_PEER: Peer = {
+  id: 'node-mesh-broadcast',
+  name: '📢 Public Radio Broadcast (Mesh Room)',
+  avatarColor: '#00E5FF',
+  signalStrength: 100,
+  distanceEstimate: 'Omnidirectional Mesh',
+  status: 'connected',
+  lastSeen: Date.now(),
+  isBroadcasting: true,
+};
+
 class P2PManager {
   private peers: Map<string, Peer> = new Map();
   private peerListeners: Set<PeerListener> = new Set();
@@ -25,9 +36,16 @@ class P2PManager {
     // Load cached peers from previous sessions
     const cachedPeers = await StorageService.getSavedPeers();
     cachedPeers.forEach(p => {
-      // Mark as offline until rediscovered
-      this.peers.set(p.id, { ...p, status: 'offline' });
+      if (p.id !== PUBLIC_BROADCAST_PEER.id) {
+        this.peers.set(p.id, { ...p, status: 'offline' });
+      }
     });
+
+    // Populate initial demo peers if empty so the user can immediately test
+    if (this.peers.size === 0) {
+      this.populateInitialDemoNodes();
+    }
+
     this.notifyPeers();
 
     if (WifiP2P.isAvailable()) {
@@ -38,6 +56,11 @@ class P2PManager {
   }
 
   public getUserProfile(): UserProfile | null {
+    return this.userProfile;
+  }
+
+  public async refreshUserProfile(): Promise<UserProfile> {
+    this.userProfile = await StorageService.getOrCreateUserProfile();
     return this.userProfile;
   }
 
@@ -94,11 +117,34 @@ class P2PManager {
   }
 
   /**
-   * Sends an offline encrypted message to a peer.
+   * Manually adds a peer (e.g. from manual fingerprint input or quick test).
+   */
+  public addManualPeer(name: string, customId?: string): Peer {
+    const keyPair = EncryptionService.generateKeyPair();
+    const fingerprint = customId || EncryptionService.getFingerprint(keyPair.publicKey);
+    const peer: Peer = {
+      id: customId ? `node-${customId}` : `node-${fingerprint}`,
+      name: name || `Node-${fingerprint.slice(0, 4)}`,
+      avatarColor: '#7928CA',
+      publicKey: keyPair.publicKey,
+      signalStrength: 95,
+      distanceEstimate: '~10m',
+      status: 'nearby',
+      lastSeen: Date.now(),
+      isBroadcasting: true,
+    };
+    this.peers.set(peer.id, peer);
+    StorageService.savePeer(peer);
+    this.notifyPeers();
+    return peer;
+  }
+
+  /**
+   * Sends an offline encrypted message to a peer or public broadcast room.
    */
   public async sendMessage(peer: Peer, text: string): Promise<Message> {
     if (!this.userProfile) {
-      throw new Error('User profile not initialized');
+      this.userProfile = await StorageService.getOrCreateUserProfile();
     }
 
     const messageId = `msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
@@ -107,7 +153,7 @@ class P2PManager {
     let isEncrypted = false;
 
     // Perform E2E authenticated encryption if peer's public key is known
-    if (peer.publicKey && this.userProfile.secretKey) {
+    if (peer.publicKey && this.userProfile.secretKey && peer.id !== PUBLIC_BROADCAST_PEER.id) {
       const encryptedPkg = EncryptionService.encrypt(
         text,
         peer.publicKey,
@@ -120,7 +166,7 @@ class P2PManager {
 
     const packet: PacketPayload = {
       version: 1,
-      type: 'MSG',
+      type: peer.id === PUBLIC_BROADCAST_PEER.id ? 'MSG' : 'MSG',
       msgId: messageId,
       from: this.userProfile.id,
       to: peer.id,
@@ -155,7 +201,7 @@ class P2PManager {
         newMsg.status = 'delivered';
         await StorageService.updateMessageStatus(peer.id, messageId, 'delivered');
         this.notifyMessage(newMsg);
-      }, 1200);
+      }, 1000);
     } else {
       // Simulator transmission: simulated radio propagation with delivery and reply
       this.simulateTransmission(peer, newMsg, packet);
@@ -207,9 +253,11 @@ class P2PManager {
         }
       }
 
+      const conversationId = packet.to === PUBLIC_BROADCAST_PEER.id ? PUBLIC_BROADCAST_PEER.id : packet.from;
+
       const msg: Message = {
         id: packet.msgId,
-        conversationId: packet.from,
+        conversationId: conversationId,
         fromPeerId: packet.from,
         toPeerId: this.userProfile.id,
         text: decryptedText,
@@ -220,7 +268,7 @@ class P2PManager {
         nonce: packet.nonce,
       };
 
-      await StorageService.saveMessage(packet.from, msg);
+      await StorageService.saveMessage(conversationId, msg);
       this.notifyMessage(msg);
     } catch (e) {
       console.warn('Failed to parse incoming packet:', e);
@@ -249,26 +297,26 @@ class P2PManager {
     this.messageListeners.forEach(listener => listener(msg));
   }
 
-  // --- Realistic Simulator for testing ---
+  // --- Initial Demo Nodes Setup ---
 
-  private startSimulatedDiscovery() {
+  private populateInitialDemoNodes() {
     const demoNodes = [
       {
-        id: 'node-7F2A-99B1',
+        id: 'node-7F2A-99B1-40D8',
         name: 'Nexus-7 (Direct Radio)',
         avatarColor: '#00E5FF',
         distanceEstimate: '~12m',
         signalStrength: 92,
       },
       {
-        id: 'node-A4C1-308D',
+        id: 'node-A4C1-308D-E922',
         name: 'GhostProtocol-09',
         avatarColor: '#7928CA',
         distanceEstimate: '~35m',
         signalStrength: 78,
       },
       {
-        id: 'node-55E0-18FA',
+        id: 'node-55E0-18FA-BC01',
         name: 'Echo-Vanguard',
         avatarColor: '#00FF88',
         distanceEstimate: '~65m',
@@ -276,28 +324,35 @@ class P2PManager {
       },
     ];
 
-    let index = 0;
+    demoNodes.forEach(item => {
+      const keypair = EncryptionService.generateKeyPair();
+      const peer: Peer = {
+        id: item.id,
+        name: item.name,
+        avatarColor: item.avatarColor,
+        publicKey: keypair.publicKey,
+        signalStrength: item.signalStrength,
+        distanceEstimate: item.distanceEstimate,
+        status: 'nearby',
+        lastSeen: Date.now(),
+        isBroadcasting: true,
+      };
+      this.peers.set(peer.id, peer);
+      StorageService.savePeer(peer);
+    });
+  }
+
+  // --- Realistic Simulator for testing ---
+
+  private startSimulatedDiscovery() {
+    // Keep peers alive and refresh timestamps
     this.simInterval = setInterval(() => {
-      if (index < demoNodes.length) {
-        const item = demoNodes[index];
-        const keypair = EncryptionService.generateKeyPair();
-        const peer: Peer = {
-          id: item.id,
-          name: item.name,
-          avatarColor: item.avatarColor,
-          publicKey: keypair.publicKey,
-          signalStrength: item.signalStrength,
-          distanceEstimate: item.distanceEstimate,
-          status: 'nearby',
-          lastSeen: Date.now(),
-          isBroadcasting: true,
-        };
-        this.peers.set(peer.id, peer);
-        StorageService.savePeer(peer);
-        this.notifyPeers();
-        index++;
-      }
-    }, 1800);
+      this.peers.forEach(peer => {
+        peer.lastSeen = Date.now();
+        peer.status = 'nearby';
+      });
+      this.notifyPeers();
+    }, 4000);
   }
 
   private simulateTransmission(
@@ -314,33 +369,41 @@ class P2PManager {
       );
       this.notifyMessage({ ...message, status: 'delivered' });
 
+      // Simulate incoming peer response after radio propagation delay
       setTimeout(async () => {
-        const replies = [
-          '📡 Packet received over WiFi radio beacon! Signal strong at 92%.',
-          '🔒 Decrypted E2E with Curve25519 authenticated key. Zero internet required!',
-          'Roger that! Relay hop established without cellular towers.',
-          'Message confirmed on offline mesh node.',
-        ];
+        const isBroadcast = peer.id === PUBLIC_BROADCAST_PEER.id;
+        const replies = isBroadcast
+          ? [
+              '📢 [Mesh Beacon]: Broadcast packet bounced across local mesh nodes! Signal verified.',
+              '📡 [Node-Nexus]: Received your open radio transmission clearly.',
+              '⚡ [Node-Echo]: Offline radio mesh channel operational at 100% throughput.',
+            ]
+          : [
+              '📡 Packet received over WiFi radio beacon! Signal strong at 92%.',
+              '🔒 Decrypted E2E with Curve25519 authenticated key. Zero internet required!',
+              'Roger that! Relay hop established directly without cell towers.',
+              'Message confirmed on offline peer node. Radio channel open.',
+            ];
         const replyText =
           replies[Math.floor(Math.random() * replies.length)];
 
-        const replyMsgId = `reply-${Date.now()}`;
+        const replyMsgId = `reply-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
         const replyMsg: Message = {
           id: replyMsgId,
           conversationId: peer.id,
-          fromPeerId: peer.id,
+          fromPeerId: isBroadcast ? 'node-mesh-repeater' : peer.id,
           toPeerId: this.userProfile?.id || '',
           text: replyText,
           timestamp: Date.now(),
           status: 'delivered',
           isMine: false,
-          isEncrypted: true,
+          isEncrypted: !isBroadcast,
         };
 
         await StorageService.saveMessage(peer.id, replyMsg);
         this.notifyMessage(replyMsg);
-      }, 2500);
-    }, 700);
+      }, 1800);
+    }, 600);
   }
 }
 

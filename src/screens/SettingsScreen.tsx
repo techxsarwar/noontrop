@@ -78,9 +78,35 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     );
   };
 
-  const fingerprint = profile
+  const handleRegenerateKeys = async () => {
+    Alert.alert(
+      'Regenerate Cryptographic Keys',
+      'This will generate a brand new Curve25519 public/private keypair and fingerprint on your device.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Generate New Keys',
+          onPress: async () => {
+            const keyPair = EncryptionService.generateKeyPair();
+            const fingerprint = EncryptionService.getFingerprint(keyPair.publicKey);
+            const current = await StorageService.getOrCreateUserProfile();
+            const updated = await StorageService.updateUserProfile({
+              ...current,
+              publicKey: keyPair.publicKey,
+              secretKey: keyPair.secretKey,
+              id: `node-${fingerprint}`,
+            });
+            setProfile(updated);
+            Alert.alert('New Keys Generated', `New Fingerprint: ${fingerprint}`);
+          },
+        },
+      ],
+    );
+  };
+
+  const fingerprint = profile && profile.publicKey
     ? EncryptionService.getFingerprint(profile.publicKey)
-    : 'LOADING...';
+    : EncryptionService.getFingerprint();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -170,6 +196,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               {profile?.publicKey || 'Loading...'}
             </Text>
           </View>
+
+          <TouchableOpacity
+            style={styles.regenerateKeyBtn}
+            onPress={handleRegenerateKeys}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.regenerateKeyText}>⚡ REGENERATE NEW KEYS</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Technology Explanation Card */}
@@ -379,6 +413,22 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     fontSize: 10,
     fontFamily: 'monospace',
+    marginBottom: theme.spacing.sm,
+  },
+  regenerateKeyBtn: {
+    backgroundColor: 'rgba(0, 229, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.sm,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  regenerateKeyText: {
+    color: theme.colors.primary,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.8,
   },
   featureItem: {
     flexDirection: 'row',

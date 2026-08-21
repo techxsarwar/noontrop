@@ -26,10 +26,14 @@ export class StorageService {
     try {
       const stored = await AsyncStorage.getItem(KEYS.USER_PROFILE);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed: UserProfile = JSON.parse(stored);
+        // Check if existing profile is valid with real keys
+        if (parsed && parsed.publicKey && parsed.secretKey && parsed.id && parsed.id !== 'node-fallback') {
+          return parsed;
+        }
       }
 
-      // First time initialization: generate fresh keypair and identity
+      // First time or corrupted initialization: generate fresh keypair and identity
       const keyPair = EncryptionService.generateKeyPair();
       const fingerprint = EncryptionService.getFingerprint(keyPair.publicKey);
       const randomColor =
@@ -52,10 +56,10 @@ export class StorageService {
       return newProfile;
     } catch (e) {
       console.error('Failed to get/create user profile:', e);
-      // Fallback
       const keyPair = EncryptionService.generateKeyPair();
+      const fingerprint = EncryptionService.getFingerprint(keyPair.publicKey);
       return {
-        id: 'node-fallback',
+        id: `node-${fingerprint}`,
         nickname: 'WaveNode-0001',
         avatarColor: '#00E5FF',
         publicKey: keyPair.publicKey,
@@ -66,10 +70,10 @@ export class StorageService {
   }
 
   /**
-   * Updates user nickname and avatar color.
+   * Updates user profile fields.
    */
   static async updateUserProfile(
-    updates: Partial<Pick<UserProfile, 'nickname' | 'avatarColor'>>,
+    updates: Partial<UserProfile>,
   ): Promise<UserProfile> {
     const current = await this.getOrCreateUserProfile();
     const updated: UserProfile = {
