@@ -2,6 +2,7 @@ import { WifiP2P, NativePeerEvent, NativeMessageEvent } from '../native/WifiP2P'
 import { Peer, Message, PacketPayload, UserProfile } from '../types';
 import { EncryptionService } from './EncryptionService';
 import { StorageService } from './StorageService';
+import { PermissionService } from './PermissionService';
 
 type PeerListener = (peers: Peer[]) => void;
 type MessageListener = (message: Message) => void;
@@ -17,6 +18,9 @@ class P2PManager {
 
   public async initialize(): Promise<void> {
     this.userProfile = await StorageService.getOrCreateUserProfile();
+
+    // Request Android runtime permissions for Wi-Fi Direct and Nearby Devices
+    await PermissionService.requestWifiDirectPermissions();
 
     // Load cached peers from previous sessions
     const cachedPeers = await StorageService.getSavedPeers();

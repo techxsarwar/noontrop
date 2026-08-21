@@ -11,6 +11,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, Peer, UserProfile } from '../types';
 import { P2PService } from '../services/P2PService';
+import { PermissionService } from '../services/PermissionService';
 import { RadarView } from '../components/RadarView';
 import { PeerCard } from '../components/PeerCard';
 import { theme } from '../theme';
@@ -26,11 +27,15 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const [isBroadcasting, setIsBroadcasting] = useState<boolean>(true);
+  const [hasPermissions, setHasPermissions] = useState<boolean>(true);
 
   useEffect(() => {
     let unsubscribePeers: () => void = () => {};
 
     const init = async () => {
+      const granted = await PermissionService.requestWifiDirectPermissions();
+      setHasPermissions(granted);
+
       await P2PService.initialize();
       setUserProfile(P2PService.getUserProfile());
 
@@ -49,6 +54,15 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
       unsubscribePeers();
     };
   }, []);
+
+  const handleGrantPermissions = async () => {
+    const granted = await PermissionService.requestWifiDirectPermissions();
+    setHasPermissions(granted);
+    if (granted) {
+      await P2PService.startScanning();
+      await P2PService.startBroadcasting();
+    }
+  };
 
   const toggleScanning = async () => {
     if (isScanning) {
@@ -93,6 +107,25 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
           <Text style={styles.settingsIcon}>⚙️</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Permission Warning Banner if missing */}
+      {!hasPermissions && (
+        <TouchableOpacity
+          style={styles.permissionWarningBanner}
+          onPress={handleGrantPermissions}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.permissionWarningIcon}>⚠️</Text>
+          <View style={styles.permissionWarningTextContainer}>
+            <Text style={styles.permissionWarningTitle}>
+              Nearby Device & Location Permission Required
+            </Text>
+            <Text style={styles.permissionWarningSubtitle}>
+              Tap here to grant permissions so your phone can discover nearby WiFi radios.
+            </Text>
+          </View>
+        </TouchableOpacity>
+      )}
 
       {/* Offline Status Badge */}
       <View style={styles.offlineBanner}>
@@ -325,5 +358,34 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,
+  },
+  permissionWarningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 184, 0, 0.15)',
+    borderWidth: 1,
+    borderColor: theme.colors.accentAmber,
+    borderRadius: theme.borderRadius.md,
+    marginHorizontal: theme.spacing.md,
+    marginVertical: theme.spacing.xs,
+    padding: theme.spacing.md,
+  },
+  permissionWarningIcon: {
+    fontSize: 22,
+    marginRight: 10,
+  },
+  permissionWarningTextContainer: {
+    flex: 1,
+  },
+  permissionWarningTitle: {
+    color: theme.colors.accentAmber,
+    fontSize: 12,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  permissionWarningSubtitle: {
+    color: theme.colors.textPrimary,
+    fontSize: 11,
+    lineHeight: 15,
   },
 });

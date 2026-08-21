@@ -1,4 +1,9 @@
 {
   "name": "NoonTrop",
-  "displayName": "NoonTrop"
+  "displayName": "NoonTrop",
+  "extra": {
+    "eas": {
+      "projectId": "9c036bac-07d1-45bd-baa4-2ca8a6c32d17"
+    }
+  }
 }
