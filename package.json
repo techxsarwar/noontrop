@@ -1,7 +1,9 @@
 {
   "name": "com.noontrop.app",
   "version": "0.0.1",
-  "private": true,
+  "description": "Zero-Internet, Zero-SIM, Zero-Server Peer-to-Peer Mesh & WiFi Direct Communicator",
+  "author": "Sarwar <darsarwar060@gmail.com>",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
